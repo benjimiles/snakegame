@@ -89,3 +89,12 @@ body,
 #logo {
   position: absolute;
 }
+
+#title {
+  text-align: center;
+  font-size: 60px;
+}
+
+#footer {
+  text-align: center;
+}
