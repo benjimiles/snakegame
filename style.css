@@ -5,6 +5,7 @@ body {
   height: 100vh;
   margin: 0;
   font-family: "VT323", monospace;
+  position: relative;
 }
 
 body,
@@ -13,51 +14,39 @@ body,
 }
 
 #game-board {
-  border-radius: 100px;
+  border-radius: 00px;
   display: grid;
   grid-template-columns: repeat(20, 20px);
   grid-template-rows: repeat(20, 20px);
   margin: 5px;
+  position: relative; /* Add position relative */
 }
 
-.game-border-1 {
+/* .game-border-1 {
   border: #000000 solid 10px;
   border-radius: 30px;
   box-shadow: inset 0 0 0 10px #000000;
-  box-shadow: 5px 10px #000000;
 }
 
 .game-border-2 {
   border: #0400ff solid 8px;
-  border-radius: 26px;
+  border-radius: 0px;
   box-shadow: inset 0 0 0 10px #1f1f1f;
-}
+} */
 
 .game-border-3 {
-  border: #9b06af solid 30px;
-  border-radius: 20px;
-  box-shadow: inset 0 0 0 5px #494949;
-}
-
-#instruction-text {
-  position: absolute;
-  top: 60%;
-  color: #333;
-  width: 300px;
-  text-align: center;
-  text-transform: capitalize;
-  padding: 30px;
-  margin: 0;
-  z-index: 1;
+  border: #9b06af solid 00px;
+  border-radius: 0px;
+  box-shadow: inset 0 0 0 5px #000000;
 }
 
 .scores {
   display: flex;
   justify-content: space-between;
-}
-
-#score {
-  color: #ffffff;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
 }
 
 #score,
@@ -65,10 +54,10 @@ body,
   font-size: 40px;
   font-weight: bolder;
   margin: 10px 0;
+  color: #ffffff;
 }
 
 #highScore {
-  color: #ffffff;
   display: none;
 }
 
@@ -88,6 +77,20 @@ body,
 
 #logo {
   position: absolute;
+}
+
+#instruction-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #333;
+  width: 300px;
+  text-align: center;
+  text-transform: capitalize;
+  padding: 30px;
+  margin: 0;
+  z-index: 1;
 }
 
 #title {

@@ -14,6 +14,7 @@ let direction = "right";
 let gameInterval;
 let gameSpeedDelay = 200;
 let gameStarted = false;
+let isPaused = false;
 
 // Draw game map, snake, food
 function draw() {
@@ -25,8 +26,11 @@ function draw() {
 
 // Draw snake
 function drawSnake() {
-  snake.forEach((segment) => {
+  snake.forEach((segment, index) => {
     const snakeElement = createGameElement("div", "snake");
+    if (index === 0) {
+      snakeElement.className += " snake-head"; // Add snake-head class to the head
+    }
     setPosition(snakeElement, segment);
     board.appendChild(snakeElement);
   });
@@ -45,13 +49,11 @@ function setPosition(element, position) {
   element.style.gridRow = position.y;
 }
 
-// Testing draw function
-// draw();
-
 // Draw food function
 function drawFood() {
   if (gameStarted) {
     const foodElement = createGameElement("div", "food");
+    foodElement.style.backgroundColor = "#ff0000"; // Set the color of the food (red in this case)
     setPosition(foodElement, food);
     board.appendChild(foodElement);
   }
@@ -66,25 +68,26 @@ function generateFood() {
 
 // Moving the snake
 function move() {
+  if (isPaused) return; // Pause the game if isPaused is true
+
   const head = { ...snake[0] };
+
   switch (direction) {
     case "up":
-      head.y--;
+      head.y = (head.y - 1 + gridSize) % gridSize; // Move up and wrap around vertically
       break;
     case "down":
-      head.y++;
+      head.y = (head.y + 1) % gridSize; // Move down and wrap around vertically
       break;
     case "left":
-      head.x--;
+      head.x = (head.x - 1 + gridSize) % gridSize; // Move left and wrap around horizontally
       break;
     case "right":
-      head.x++;
+      head.x = (head.x + 1) % gridSize; // Move right and wrap around horizontally
       break;
   }
 
   snake.unshift(head);
-
-  //   snake.pop();
 
   if (head.x === food.x && head.y === food.y) {
     food = generateFood();
@@ -100,12 +103,6 @@ function move() {
   }
 }
 
-// Test moving
-// setInterval(() => {
-//   move(); // Move first
-//   draw(); // Then draw again new position
-// }, 200);
-
 // Start game function
 function startGame() {
   gameStarted = true; // Keep track of a running game
@@ -118,52 +115,61 @@ function startGame() {
   }, gameSpeedDelay);
 }
 
+// Pause game function
+function pauseGame() {
+  isPaused = !isPaused; // Toggle isPaused
+  if (isPaused) {
+    clearInterval(gameInterval);
+    instructionText.textContent = "Press spacebar to resume";
+    instructionText.style.display = "block";
+  } else {
+    instructionText.style.display = "none";
+    gameInterval = setInterval(() => {
+      move();
+      checkCollision();
+      draw();
+    }, gameSpeedDelay);
+  }
+}
+
 // Keypress event listener
-function handleKeyPress(event) {
-  if (
-    (!gameStarted && event.code === "Space") ||
-    (!gameStarted && event.key === " ")
-  ) {
+document.addEventListener("keydown", (event) => {
+  if (!gameStarted && (event.code === "Space" || event.key === " ")) {
     startGame();
   } else {
     switch (event.key) {
       case "ArrowUp":
-        direction = "up";
+        if (direction !== "down") direction = "up";
         break;
       case "ArrowDown":
-        direction = "down";
+        if (direction !== "up") direction = "down";
         break;
       case "ArrowLeft":
-        direction = "left";
+        if (direction !== "right") direction = "left";
         break;
       case "ArrowRight":
-        direction = "right";
+        if (direction !== "left") direction = "right";
+        break;
+      case " ":
+        if (gameStarted) pauseGame(); // Pause the game when spacebar is pressed
         break;
     }
   }
-}
-
-document.addEventListener("keydown", handleKeyPress);
+});
 
 function increaseSpeed() {
-  //   console.log(gameSpeedDelay);
-  if (gameSpeedDelay > 150) {
+  if (gameSpeedDelay > 25) {
     gameSpeedDelay -= 5;
-  } else if (gameSpeedDelay > 100) {
-    gameSpeedDelay -= 3;
-  } else if (gameSpeedDelay > 50) {
-    gameSpeedDelay -= 2;
-  } else if (gameSpeedDelay > 25) {
-    gameSpeedDelay -= 1;
   }
 }
 
 function checkCollision() {
   const head = snake[0];
 
-  if (head.x < 1 || head.x > gridSize || head.y < 1 || head.y > gridSize) {
-    resetGame();
-  }
+  if (head.x < 0) head.x = gridSize - 1; // Wrap around horizontally
+  if (head.x >= gridSize) head.x = 0; // Wrap around horizontally
+  if (head.y < 0) head.y = gridSize - 1; // Wrap around vertically
+  if (head.y >= gridSize) head.y = 0; // Wrap around vertically
 
   for (let i = 1; i < snake.length; i++) {
     if (head.x === snake[i].x && head.y === snake[i].y) {
@@ -190,6 +196,7 @@ function updateScore() {
 function stopGame() {
   clearInterval(gameInterval);
   gameStarted = false;
+  isPaused = false; // Reset isPaused on game stop
   instructionText.style.display = "block";
   logo.style.display = "block";
 }
